@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta property="og:title" content="Jeffery Hu | 留言板">
+    <meta property="og:description" content="欢迎留下您的留言和建议">
+    <meta property="og:url" content="https://huyang3780.top/guestbook">
+    <meta property="og:type" content="website">
+    <link rel="icon" href="pic/icon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="pic/icon.ico" type="image/x-icon">
+    
+    <title id="page-title" data-cn="Jeffery Hu | 留言板" data-en="Jeffery Hu | Guestbook" data-jp="Jeffery Hu | 掲示板"></title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3B82F6',
+                        secondary: '#10B981',
+                        accent: '#EC4899',
+                        wechat: '#07C160',
+                        weibo: '#E6162D',
+                        zhihu: '#0F88EB',
+                        qq: '#12B7F5',
+                        dark: '#1E293B',
+                        light: '#F8FAFC',
+                        softBlue: '#E1F5FE',
+                        softGreen: '#E8F5E9',
+                        softBeige: '#F5F5DC',
+                        softPink: '#FFEBEE',
+                        softGray: '#F5F7FA',
+                        softLavender: '#F3E5F5'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                }
+            }
+        }
+		
+		// 所有子域名和主域名统一设置为主域名，以同步语言设置
+		document.domain = 'huyang3780.top';
+    </script>
+    
+    <link rel="stylesheet" href="src/css.css">
+</head>
+<body class="index-bg-pattern text-dark overflow-x-hidden geometric-shapes">
+    <header class="fixed top-0 left-0 w-full z-50 transition-all duration-300 bg-white/90 backdrop-blur-sm shadow-sm" id="navbar">
+        <div class="nav-decoration"></div>
+        
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center">
+                <!-- 导航栏logo区域 -->
+				<a href="https://guestbook.huyang3780.top" class="text-2xl font-bold flex items-center group mr-6" id="page-logo">
+					<span class="mr-2 text-primary group-hover:rotate-12 transition-transform duration-300" id="logo-icon">
+						<i class="fa fa-comments"></i>
+					</span>
+					<span id="logo-text">Guestbook</span>
+				</a>
+                
+                <div class="hidden md:block">
+                    <select id="language-selector" class="bg-white border border-gray-300 text-dark rounded-md px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+                        <option value="cn" selected>中文</option>
+                        <option value="en">English</option>
+                        <option value="jp">日本語</option>
+                    </select>
+                </div>
+            </div>
+            
+            <button id="menu-toggle" class="md:hidden text-dark focus:outline-none">
+                <i class="fa fa-bars text-xl"></i>
+            </button>
+			
+			<nav class="hidden md:flex items-center space-x-6">
+				<a href="https://huyang3780.top" class="link-underline text-primary" 
+				   data-cn="主站首页" data-en="Main Site Home" data-jp="メインサイトホーム">
+				   <i class="fa fa-home mr-1"></i>
+				</a>
+				<a href="#comment" class="link-underline" data-cn="留言区" data-en="Message Area" data-jp="メッセージエリア">留言区</a>
+				<a href="#problem" class="link-underline" data-cn="常见问题" data-en="FAQ" data-jp="よくある質問">常见问题</a>
+				<a href="#group" class="link-underline" data-cn="交流群" data-en="Communication Group" data-jp="コミュニケーショングループ">交流群</a>
+				<a href="#contact" class="link-underline" data-cn="联系我" data-en="Contact Me" data-jp="連絡先">联系我</a>
+			</nav>
+        </div>
+        
+        <div class="md:hidden bg-white shadow-2xl absolute w-full left-0 top-full transform -translate-y-full opacity-0 transition-all duration-300 pointer-events-none" id="mobile-menu">
+			<div class="container mx-auto px-4 py-4 flex flex-col space-y-4">
+				<div class="mb-1">
+					<select id="mobile-language-selector" class="w-full bg-white border border-gray-300 text-dark rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+						<option value="cn" selected>中文</option>
+						<option value="en">English</option>
+						<option value="jp">日本語</option>
+					</select>
+				</div>
+				<a href="#comment" class="text-lg py-2 border-b border-gray-100" data-cn="留言区" data-en="Message Area" data-jp="メッセージエリア"></a>
+				<a href="#problem" class="text-lg py-2 border-b border-gray-100" data-cn="常见问题" data-en="FAQ" data-jp="よくある質問"></a>
+				<a href="#group" class="text-lg py-2 border-b border-gray-100" data-cn="交流群" data-en="Communication Group" data-jp="コミュニケーショングループ"></a>
+				<a href="#contact" class="text-lg py-2 border-b border-gray-100" data-cn="联系我" data-en="Contact Me" data-jp="連絡先">联系我</a>
+			</div>
+		</div>
+    </header>
+	<section class="min-h-screen pt-24 relative overflow-hidden flex items-center">
+		<div class="absolute top-0 right-0 w-1/2 h-full opacity-20 pointer-events-none">
+			<div class="absolute top-20 right-20 w-64 h-64 rounded-full bg-primary/30 blur-3xl"></div>
+			<div class="absolute bottom-20 right-40 w-80 h-80 rounded-full bg-accent/30 blur-3xl"></div>
+		</div>
+		
+		<div class="container mx-auto px-4 pt-12 pb-24 relative z-10">
+			<div class="max-w-3xl mx-auto text-left">
+				<h1 class="text-[clamp(2.5rem,8vw,5rem)] font-bold leading-tight mb-6" 
+					data-cn="欢迎来到<br><span class='bg-gradient-to-r from-primary to-accent text-gradient whitespace-nowrap'>留言板</span>"
+					data-en="Welcome to<br><span class='bg-gradient-to-r from-primary to-accent text-gradient whitespace-nowrap'>Guestbook</span>"
+					data-jp="ようこそ<br><span class='bg-gradient-to-r from-primary to-accent text-gradient whitespace-nowrap'>掲示板</span>">
+				</h1>
+				<p class="text-[clamp(1rem,2vw,1.25rem)] text-gray-600 mb-8 max-w-2xl" 
+					data-cn="很高兴你能来到这里！无论是提问、建议还是简单的交流，我都很乐意倾听。期待与你互动！"
+					data-en="Glad you're here! Whether it's a question, suggestion, or just a chat, I'm happy to listen. Looking forward to interacting with you!"
+					data-jp="ここに来てくれて嬉しいです！質問、提案、あるいはただのおしゃべりでも、喜んで聞かせてください。皆さんとの交流を楽しみにしています！">
+				</p>
+				<div class="flex flex-wrap gap-4">
+					<a href="#comment" class="px-8 py-3 bg-primary text-white rounded-full shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 hover:-translate-y-1 transition-all"
+						data-cn="我要留言 <i class='fa fa-pencil ml-2'></i>"
+						data-en="Leave a Message <i class='fa fa-pencil ml-2'></i>"
+						data-jp="メッセージを残す <i class='fa fa-pencil ml-2'></i>">
+					</a>
+					<a href="#group" class="px-8 py-3 bg-white text-dark rounded-full shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all border border-gray-100"
+						data-cn="加入交流群 <i class='fa fa-comments ml-2'></i>"
+						data-en="Join Communication Group <i class='fa fa-comments ml-2'></i>"
+						data-jp="コミュニティに参加 <i class='fa fa-comments ml-2'></i>">
+					</a>
+				</div>
+			</div>
+			
+			<div class="absolute bottom-10 left-1/2 transform -translate-x-1/2 animate-bounce lg:bottom-10 sm:bottom-8">
+				<a href="#comment" class="text-gray-400 hover:text-primary transition-colors">
+					<i class="fa fa-chevron-down text-2xl"></i>
+				</a>
+			</div>
+		</div>
+		
+		<div class="section-divider absolute bottom-0 left-0"></div>
+	</section>
+    <section id="comment" class="py-20 relative overflow-hidden section-fade">
+        <div class="container mx-auto px-4">
+            <div class="text-center max-w-3xl mx-auto mb-12">
+                <span class="inline-block px-4 py-1 bg-primary/10 text-primary rounded-full text-sm font-medium mb-4"
+                    data-cn="留言区" data-en="Message Area" data-jp="メッセージエリア">
+                </span>
+                <h2 class="text-[clamp(1.8rem,5vw,3rem)] font-bold mb-6"
+                    data-cn="留下你的想法" data-en="Leave Your Thoughts" data-jp="あなたの考えを残して">
+                </h2>
+                <p class="text-gray-600 text-lg"
+                    data-cn="欢迎在这里留下你的问题、建议或交流内容，我会定期查看并回复"
+                    data-en="Welcome to leave your questions, suggestions or communication here, I will check and reply regularly"
+                    data-jp="ここに質問、提案、コメントを残してください。定期的に確認して返信します">
+                </p>
+            </div>
+            
+			<!-- 留言表单 -->
+			<div class="bg-white rounded-2xl shadow-xl p-8 max-w-4xl mx-auto">
+				<h3 class="text-2xl font-bold mb-6 text-center"
+					data-cn="发送留言" data-en="Send a Message" data-jp="メッセージを送信">
+				</h3>
+				<form id="messageForm" action="https://getform.io/f/akkpnjwa" method="POST">
+					<!-- Getform 所需的隐藏字段 -->
+					<input type="hidden" name="_subject" value="新的留言信息">
+					<input type="hidden" name="_gotcha" style="display:none">
+
+					<div>
+						<label for="message-name" class="block text-sm font-medium text-gray-700 mb-2"
+							data-cn="姓名" data-en="Name" data-jp="名前">
+						</label>
+						<input type="text" id="message-name" 
+							   name="name"
+							   class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-primary transition-colors bg-softGray/50" 
+							   data-cn-placeholder="请输入您的姓名" 
+							   data-en-placeholder="Please enter your name" 
+							   data-jp-placeholder="名前を入力してください">
+					</div>
+					
+					<div>
+						<label for="message-email" class="block text-sm font-medium text-gray-700 mb-2"
+							data-cn="邮箱" data-en="Email" data-jp="メール">
+						</label>
+						<input type="email" id="message-email" 
+							   name="email"
+							   class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-primary transition-colors bg-softGray/50" 
+							   data-cn-placeholder="请输入您的邮箱" 
+							   data-en-placeholder="Please enter your email address" 
+							   data-jp-placeholder="メールアドレスを入力してください">
+					</div>
+					
+					<div>
+						<label for="message-category" class="block text-sm font-medium text-gray-700 mb-2"
+							data-cn="留言类型" data-en="Message Type" data-jp="メッセージの種類">
+						</label>
+						<select id="message-category" 
+								name="category"
+								class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-primary transition-colors bg-softGray/50">
+							<option value="question" data-cn="提问" data-en="Question" data-jp="質問">提问</option>
+							<option value="suggestion" data-cn="建议" data-en="Suggestion" data-jp="提案">建议</option>
+							<option value="communication" data-cn="交流" data-en="Communication" data-jp="交流">交流</option>
+						</select>
+					</div>
+					
+					<div>
+						<label for="message-content" class="block text-sm font-medium text-gray-700 mb-2"
+							data-cn="留言内容" data-en="Message Content" data-jp="メッセージの内容">
+						</label>
+						<textarea id="message-content" rows="5" 
+								  name="content"
+								  class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary focus:border-primary transition-colors bg-softGray/50" 
+								  data-cn-placeholder="请输入您的留言内容" 
+								  data-en-placeholder="Please enter your message" 
+								  data-jp-placeholder="メッセージの内容を入力してください"></textarea>
+					</div>
+					
+					<div class="flex items-center">
+						<input type="checkbox" id="message-agree" 
+							   name="agree_to_public"
+							   class="w-4 h-4 text-primary focus:ring-primary border-gray-300 rounded">
+						<label for="message-agree" class="ml-2 block text-sm text-gray-700"
+							data-cn="我同意我的留言会被公开显示" 
+							data-en="I agree to public display" 
+							data-jp="メッセージの公開表示に同意します">
+						</label>
+					</div>
+					
+					<button type="submit" class="w-full bg-primary text-white py-3 px-6 rounded-lg hover:bg-primary/90 transition-colors shadow-lg shadow-primary/20"
+						data-cn="提交留言 <i class='fa fa-paper-plane ml-2'></i>"
+						data-en="Submit Message <i class='fa fa-paper-plane ml-2'></i>"
+						data-jp="メッセージを送信 <i class='fa fa-paper-plane ml-2'></i>">
+					</button>
+				</form>
+			</div>
+			
+			<br>
+			<br>
+			<br>
+			
+			<div class="text-center max-w-3xl mx-auto mb-12">
+				<span class="inline-block px-4 py-1 bg-primary/10 text-primary rounded-full text-sm font-medium mb-4"
+					data-cn="留言展示区" data-en="Message Display Area" data-jp="メッセージコーナー">
+				</span>
+				<h3 class="text-[clamp(1.8rem,5vw,3rem)] font-bold mb-6"
+					data-cn="问题节选" data-en="An excerpt from the question" data-jp="質問文からの抜粋">
+				</h3>
+			</div>
+			
+            <div class="max-w-5xl mx-auto">
+                <!-- 留言分类标签 -->
+                <div class="flex flex-wrap gap-2 mb-8 justify-center">
+                    <button class="message-category px-4 py-2 rounded-full bg-primary text-white" data-category="all">
+                        <i class="fa fa-globe mr-1"></i> <span data-cn="全部" data-en="All" data-jp="全て">全部</span>
+                    </button>
+                    <button class="message-category px-4 py-2 rounded-full bg-softGray hover:bg-primary hover:text-white transition-colors" data-category="question">
+                        <i class="fa fa-question-circle mr-1"></i> <span data-cn="提问" data-en="Question" data-jp="質問">提问</span>
+                    </button>
+                    <button class="message-category px-4 py-2 rounded-full bg-softGray hover:bg-primary hover:text-white transition-colors" data-category="suggestion">
+                        <i class="fa fa-lightbulb-o mr-1"></i> <span data-cn="建议" data-en="Suggestion" data-jp="提案">建议</span>
+                    </button>
+                    <button class="message-category px-4 py-2 rounded-full bg-softGray hover:bg-primary hover:text-white transition-colors" data-category="communication">
+                        <i class="fa fa-comments mr-1"></i> <span data-cn="交流" data-en="Communication" data-jp="交流">交流</span>
+                    </button>
+                </div>
+                
+                <div class="space-y-6 mb-12" id="message-list">
+
+                    <div class="bg-white rounded-2xl shadow-xl overflow-hidden message-item" data-category="question">
+                        <div class="p-6">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="flex items-center">
+                                    <img src="pic/example.png" alt="用户头像" class="w-12 h-12 rounded-full mr-4">
+                                    <div>
+                                        <h4 class="font-semibold" data-cn="example" data-en="example" data-jp="example">example</h4>
+                                        <p class="text-sm text-gray-500" data-cn="2025年8月20日" data-en="August 20, 2025" data-jp="2025年8月20日">2025年8月20日</p>
+                                    </div>
+                                </div>
+                                <span class="px-2 py-1 bg-softBlue/50 text-primary text-xs rounded-full" data-cn="提问" data-en="Question" data-jp="質問">提问</span>
+                            </div>
+                            <p class="text-gray-700 mb-4" data-cn="你好，我看到你有留学日本的计划，请问你是如何准备日语能力考试的？有没有推荐的学习资源？" data-en="Hello, I see you have plans to study in Japan. How did you prepare for the Japanese proficiency test? Are there any recommended learning resources?" data-jp="こんにちは。日本での留学計画を見て、日本語能力試験の準備はどのように行ったのですか？おすすめの学習資料はありますか？">你好，我看到你有留学日本的计划，请问你是如何准备日语能力考试的？有没有推荐的学习资源？</p>
+                            <div class="border-t border-gray-100 pt-4">
+                                <div class="flex items-start">
+                                    <img src="pic/personal_photo.jpg" alt="我的头像" class="w-10 h-10 rounded-full mr-3">
+                                    <div class="bg-softBlue p-4 rounded-lg">
+                                        <p class="text-gray-700" data-cn="你好！我准备日语能力考试时主要使用了《大家的日语》教材和NHK新闻。另外，推荐使用JLPT-N2真题进行练习，配合《新完全マスター》系列辅导书效果很好。" data-en="Hello! When preparing for the Japanese proficiency test, I mainly used the 'Minna no Nihongo' textbook and NHK news. In addition, it is recommended to use JLPT-N2 real questions for practice, and the 'Shin Kanzen Master' series of reference books is very effective." data-jp="こんにちは！日本語能力試験の準備には、主に『みんなの日本語』の教材とNHKのニュースを使用しました。また、JLPT-N2の過去問を練習に使用することをお勧めします。『新完全マスター』シリーズの参考書と組み合わせると効果的です。">你好！我准备日语能力考试时主要使用了《大家的日语》教材和NHK新闻。另外，推荐使用JLPT-N2真题进行练习，配合《新完全マスター》系列辅导书效果很好。</p>
+                                        <p class="text-sm text-gray-500 mt-1" data-cn="回复于 2025年8月22日" data-en="Replied on August 22, 2025" data-jp="返信 2025年8月22日">回复于 2025年8月22日</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-2xl shadow-xl overflow-hidden message-item" data-category="suggestion">
+                        <div class="p-6">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="flex items-center">
+                                    <img src="pic/example.png" alt="用户头像" class="w-12 h-12 rounded-full mr-4">
+                                    <div>
+                                        <h4 class="font-semibold" data-cn="example" data-en="example" data-jp="example">example</h4>
+                                        <p class="text-sm text-gray-500" data-cn="2025年8月15日" data-en="August 15, 2025" data-jp="2025年8月15日">2025年8月15日</p>
+                                    </div>
+                                </div>
+                                <span class="px-2 py-1 bg-softGreen/50 text-secondary text-xs rounded-full" data-cn="建议" data-en="Suggestion" data-jp="提案">建议</span>
+                            </div>
+                            <p class="text-gray-700 mb-4" data-cn="你的个人网站设计得很漂亮！建议可以在项目作品集中添加更多项目演示视频，这样能更直观地展示项目成果。" data-en="Your personal website is beautifully designed! It is recommended to add more project demonstration videos in the project portfolio, which can more intuitively display the project results." data-jp="あなたのパーソナルウェブサイトはとてもきれいにデザインされています！プロジェクトポートフォリオにもっと多くのプロジェクトデモビデオを追加すると、プロジェクトの成果をより直感的に示すことができると思います。">你的个人网站设计得很漂亮！建议可以在项目作品集中添加更多项目演示视频，这样能更直观地展示项目成果。</p>
+                            <div class="border-t border-gray-100 pt-4">
+                                <div class="flex items-start">
+                                    <img src="pic/personal_photo.jpg" alt="我的头像" class="w-10 h-10 rounded-full mr-3">
+                                    <div class="bg-softGreen p-4 rounded-lg">
+                                        <p class="text-gray-700" data-cn="非常感谢你的建议！我完全同意你的看法，视频演示确实能更好地展示项目。我会尽快在项目作品集中添加更多演示视频，再次感谢！" data-en="Thank you very much for your suggestion! I fully agree with you that video demonstrations can indeed better showcase the project. I will add more demonstration videos to the project portfolio as soon as possible, thank you again!" data-jp="提案ありがとうございます！ビデオデモはプロジェクトをより良く紹介できると完全に同意しています。できるだけ早くプロジェクトポートフォリオに更多のデモビデオを追加します。再びありがとうございます！">非常感谢你的建议！我完全同意你的看法，视频演示确实能更好地展示项目。我会尽快在项目作品集中添加更多演示视频，再次感谢！</p>
+                                        <p class="text-sm text-gray-500 mt-1" data-cn="回复于 2025年8月18日" data-en="Replied on August 18, 2025" data-jp="返信 2025年8月18日">回复于 2025年8月18日</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-2xl shadow-xl overflow-hidden message-item" data-category="communication">
+                        <div class="p-6">
+                            <div class="flex items-center justify-between mb-4">
+                                <div class="flex items-center">
+                                    <img src="pic/example.png" alt="用户头像" class="w-12 h-12 rounded-full mr-4">
+                                    <div>
+                                        <h4 class="font-semibold" data-cn="Anonymous" data-en="Anonymous" data-jp="Anonymous">Anonymous</h4>
+                                        <p class="text-sm text-gray-500" data-cn="2025年8月10日" data-en="August 10, 2025" data-jp="2025年8月10日">2025年8月10日</p>
+                                    </div>
+                                </div>
+                                <span class="px-2 py-1 bg-softPink/50 text-accent text-xs rounded-full" data-cn="交流" data-en="Communication" data-jp="交流">交流</span>
+                            </div>
+                            <p class="text-gray-700 mb-4" data-cn="看到你在博客中分享的留学准备经验很有帮助，我也在准备留学申请，希望能和你交流一下经验。" data-en="I found the study abroad preparation experience you shared in your blog very helpful. I am also preparing for study abroad applications and hope to exchange experiences with you." data-jp="ブログで共有された留学準備の経験はとても役立ちました。私も留学申請を準備しているので、経験を交流したいと思います。">看到你在博客中分享的留学准备经验很有帮助，我也在准备留学申请，希望能和你交流一下经验。</p>
+                            <div class="border-t border-gray-100 pt-4">
+                                <div class="flex items-start">
+                                    <img src="pic/personal_photo.jpg" alt="我的头像" class="w-10 h-10 rounded-full mr-3">
+                                    <div class="bg-softPink p-4 rounded-lg">
+                                        <p class="text-gray-700" data-cn="很高兴我的经验能帮到你！留学申请过程中确实有很多需要注意的地方，你可以通过页面底部的联系方式联系我，我们可以进一步交流。" data-en="I'm glad my experience can help you! There are indeed many things to pay attention to during the study abroad application process. You can contact me through the contact information at the bottom of the page, and we can communicate further." data-jp="私の経験が役立てれば嬉しいです！留学申請の過程で確かに注意すべき点がたくさんあります。ページ下部の連絡先で私に連絡してください。さらに交流することができます。">很高兴我的经验能帮到你！留学申请过程中确实有很多需要注意的地方，你可以通过页面底部的联系方式联系我，我们可以进一步交流。</p>
+                                        <p class="text-sm text-gray-500 mt-1" data-cn="回复于 2025年8月12日" data-en="Replied on August 12, 2025" data-jp="返信 2025年8月12日">回复于 2025年8月12日</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section-divider absolute bottom-0 left-0"></div>
+    </section>
+    
+    <section id="problem" class="py-20 section-fade">
+        <div class="container mx-auto px-4 relative z-10">
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <span class="inline-block px-4 py-1 bg-primary/10 text-primary rounded-full text-sm font-medium mb-4"
+                    data-cn="常见问题" data-en="FAQ" data-jp="よくある質問">
+                </span>
+                <h2 class="text-[clamp(1.8rem,5vw,3rem)] font-bold mb-6"
+                    data-cn="高频问题解答" data-en="Frequently Asked Questions" data-jp="よくある質問の回答">
+                </h2>
+                <p class="text-gray-600 text-lg"
+                    data-cn="这里汇总了一些常见问题，如果你有其他问题，欢迎在留言区提问"
+                    data-en="Here are some frequently asked questions. If you have other questions, please feel free to ask in the message area"
+                    data-jp="ここによくある質問をまとめてあります。その他の質問があれば、メッセージエリアで質問してください">
+                </p>
+            </div>
+            
+            <div class="max-w-4xl mx-auto">
+                <div class="space-y-4">
+                    <!-- 问题1 -->
+                    <div class="bg-white rounded-xl shadow-md overflow-hidden">
+                        <button class="faq-question w-full px-6 py-4 text-left font-medium flex justify-between items-center" data-target="faq-1">
+                            <span data-cn="如何准备日本研究生申请？有什么建议吗？" data-en="How to prepare for graduate school applications in Japan? Any suggestions?" data-jp="日本の大学院への出願はどのように準備すればよいですか？アドバイスはありますか？">如何准备日本研究生申请？有什么建议吗？</span>
+                            <i class="fa fa-chevron-down text-primary transition-transform"></i>
+                        </button>
+                        <div class="faq-answer px-6 py-0 overflow-hidden max-h-0 transition-all duration-300" id="faq-1">
+                            <div class="pb-4">
+                                <p class="text-gray-600" data-cn="准备日本研究生申请需要提前规划，主要包括：确定研究方向和目标院校、联系导师、准备研究计划书、语言能力证明（日语N1和英语成绩）、本科成绩单和毕业论文等。建议提前6-12个月开始准备，重点在于研究计划书的质量和与导师的沟通。" data-en="Preparing for graduate school applications in Japan requires advance planning, mainly including: determining research direction and target institutions, contacting supervisors, preparing research plans, language proficiency certificates (Japanese N1 and English scores), undergraduate transcripts, and graduation thesis. It is recommended to start preparing 6-12 months in advance, with an emphasis on the quality of the research plan and communication with supervisors." data-jp="日本の大学院への出願準備には事前計画が必要で、主に以下のことが含まれます：研究方向と目標大学を決める、指導教官に連絡する、研究計画書を準備する、言語能力証明（日本語N1と英語成績）、学部成績証明書と卒業論文など。6-12ヶ月前から準備を開始することをお勧めします。特に研究計画書の質と指導教官とのコミュニケーションに重点を置いてください。">准备日本研究生申请需要提前规划，主要包括：确定研究方向和目标院校、联系导师、准备研究计划书、语言能力证明（日语N1和英语成绩）、本科成绩单和毕业论文等。建议提前6-12个月开始准备，重点在于研究计划书的质量和与导师的沟通。</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 问题2 -->
+                    <div class="bg-white rounded-xl shadow-md overflow-hidden">
+                        <button class="faq-question w-full px-6 py-4 text-left font-medium flex justify-between items-center" data-target="faq-2">
+                            <span data-cn="你的个人项目作品集中的源码可以分享吗？" data-en="Can you share the source code in your personal project portfolio?" data-jp="パーソナルプロジェクトのポートフォリオにあるソースコードを共有できますか？">你的个人项目作品集中的源码可以分享吗？</span>
+                            <i class="fa fa-chevron-down text-primary transition-transform"></i>
+                        </button>
+                        <div class="faq-answer px-6 py-0 overflow-hidden max-h-0 transition-all duration-300" id="faq-2">
+                            <div class="pb-4">
+                                <p class="text-gray-600" data-cn="大部分开源项目的源码都可以在我的GitHub仓库中找到（https://github.com/Jeffer-Hu）。对于一些课程设计或商业项目，由于版权限制，可能无法完全公开，但我会在项目详情页中提供关键技术点的说明和演示。" data-en="The source code for most open source projects can be found in my GitHub repository (https://github.com/Jeffer-Hu). For some course designs or commercial projects, due to copyright restrictions, they may not be fully public, but I will provide descriptions and demonstrations of key technical points on the project details page." data-jp="ほとんどのオープンソースプロジェクトのソースコードは、私のGitHubリポジトリ（https://github.com/Jeffer-Hu）で確認できます。一部の課題設計や商業プロジェクトは、著作権の制限により完全に公開できない場合がありますが、プロジェクトの詳細ページで重要な技術ポイントの説明とデモを提供します。">大部分开源项目的源码都可以在我的GitHub仓库中找到（https://github.com/Jeffer-Hu）。对于一些课程设计或商业项目，由于版权限制，可能无法完全公开，但我会在项目详情页中提供关键技术点的说明和演示。</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 问题3 -->
+                    <div class="bg-white rounded-xl shadow-md overflow-hidden">
+                        <button class="faq-question w-full px-6 py-4 text-left font-medium flex justify-between items-center" data-target="faq-3">
+                            <span data-cn="网站的多语言切换功能是如何实现的？" data-en="How is the multi-language switching function of the website implemented?" data-jp="ウェブサイトの多言語切り替え機能はどのように実装されていますか？">网站的多语言切换功能是如何实现的？</span>
+                            <i class="fa fa-chevron-down text-primary transition-transform"></i>
+                        </button>
+                        <div class="faq-answer px-6 py-0 overflow-hidden max-h-0 transition-all duration-300" id="faq-3">
+                            <div class="pb-4">
+                                <p class="text-gray-600" data-cn="网站使用JavaScript实现多语言切换，通过data属性存储不同语言的文本内容，根据用户选择动态更新页面内容。同时，结合localStorage记住用户的语言偏好，并根据用户IP地址设置默认语言。" data-en="The website uses JavaScript to implement multi-language switching, storing text content in different languages through data attributes, and dynamically updating page content based on user selection. At the same time, it uses localStorage to remember the user's language preference and sets the default language based on the user's IP address." data-jp="ウェブサイトはJavaScriptを使用して多言語切り替えを実装し、data属性を使用して異なる言語のテキストコンテンツを格納し、ユーザーの選択に基づいてページコンテンツを動的に更新します。同時に、localStorageを使用してユーザーの言語設定を覚え、ユーザーのIPアドレスに基づいてデフォルト言語を設定します。">网站使用JavaScript实现多语言切换，通过data属性存储不同语言的文本内容，根据用户选择动态更新页面内容。同时，结合localStorage记住用户的语言偏好，并根据用户IP地址设置默认语言。</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 问题4 -->
+                    <div class="bg-white rounded-xl shadow-md overflow-hidden">
+                        <button class="faq-question w-full px-6 py-4 text-left font-medium flex justify-between items-center" data-target="faq-4">
+                            <span data-cn="你推荐哪些计算机专业学习资源？" data-en="What computer professional learning resources do you recommend?" data-jp="コンピュータ専門の学習リソースをどれをお勧めしますか？">你推荐哪些计算机专业学习资源？</span>
+                            <i class="fa fa-chevron-down text-primary transition-transform"></i>
+                        </button>
+                        <div class="faq-answer px-6 py-0 overflow-hidden max-h-0 transition-all duration-300" id="faq-4">
+                            <div class="pb-4">
+                                <p class="text-gray-600" data-cn="我推荐以下学习资源：在线课程平台（Coursera、edX、Udemy）、计算机科学经典书籍（如《算法导论》《操作系统概念》）、技术社区（Stack Overflow、GitHub）、编程练习网站（LeetCode、Hackerrank）。此外，我的resource板块也整理了一些实用资源，欢迎访问。" data-en="I recommend the following learning resources: online course platforms (Coursera, edX, Udemy), classic computer science books (such as 'Introduction to Algorithms', 'Concepts of Operating Systems'), technical communities (Stack Overflow, GitHub), programming practice websites (LeetCode, Hackerrank). In addition, my resource section also organizes some practical resources, welcome to visit." data-jp="以下の学習リソースをお勧めします：オンラインコースプラットフォーム（Coursera、edX、Udemy）、コンピュータサイエンスの古典的な本（「アルゴリズム概論」「オペレーティングシステムの概念」など）、技術コミュニティ（Stack Overflow、GitHub）、プログラミング練習サイト（LeetCode、Hackerrank）。さらに、私のresourceセクションにも実用的なリソースを整理してありますので、ぜひご覧ください。">我推荐以下学习资源：在线课程平台（Coursera、edX、Udemy）、计算机科学经典书籍（如《算法导论》《操作系统概念》）、技术社区（Stack Overflow、GitHub）、编程练习网站（LeetCode、Hackerrank）。此外，我的resource板块也整理了一些实用资源，欢迎访问。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="text-center mt-10">
+                    <a href="#comment" class="inline-flex items-center px-6 py-2 border border-primary text-primary rounded-full hover:bg-primary hover:text-white transition-colors"
+                        data-cn="还有其他问题？点击提问 <i class='fa fa-angle-right ml-2'></i>"
+                        data-en="Have other questions? Click to ask <i class='fa fa-angle-right ml-2'></i>"
+                        data-jp="その他の質問がありますか？質問するにはクリック <i class='fa fa-angle-right ml-2'></i>">
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section-divider absolute bottom-0 left-0"></div>
+    </section>
+    
+    <section id="group" class="py-20 relative overflow-hidden section-fade">
+        <div class="absolute top-0 right-0 w-1/2 h-full opacity-20 pointer-events-none">
+            <div class="absolute top-40 right-40 w-96 h-96 rounded-full bg-primary/20 blur-3xl"></div>
+            <div class="absolute bottom-20 right-10 w-64 h-64 rounded-full bg-accent/20 blur-3xl"></div>
+        </div>
+        
+        <div class="container mx-auto px-4 relative z-10">
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <span class="inline-block px-4 py-1 bg-primary/10 text-primary rounded-full text-sm font-medium mb-4"
+                    data-cn="交流群" data-en="Communication Group" data-jp="コミュニケーショングループ">
+                </span>
+                <h2 class="text-[clamp(1.8rem,5vw,3rem)] font-bold mb-6"
+                    data-cn="加入交流社区" data-en="Join the Communication Community" data-jp="コミュニティに参加">
+                </h2>
+                <p class="text-gray-600 text-lg"
+                    data-cn="欢迎加入技术与留学交流群，与志同道合的朋友一起学习和进步"
+                    data-en="Welcome to join the technology and study abroad communication group, and learn and progress with like-minded friends"
+                    data-jp="技術と留学のコミュニケーショングループに参加して、志を同じくする友人と一緒に学習し、成長しましょう">
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+                <!-- 技术交流群 -->
+                <div class="bg-white rounded-2xl shadow-xl overflow-hidden card-hover">
+                    <div class="h-48 overflow-hidden relative">
+                        <img src="pic/tech-group.jpg" alt="技术交流群" class="w-full h-full object-cover">
+                        <div class="absolute inset-0 bg-gradient-to-t from-dark/70 to-transparent"></div>
+                        <div class="absolute bottom-4 left-4">
+                            <h3 class="text-xl font-bold text-white"
+                                data-cn="技术交流群" data-en="Technology Communication Group" data-jp="技術コミュニケーショングループ">
+                            </h3>
+                            <p class="text-white/80" data-cn="分享技术知识，讨论编程问题，交流项目经验" data-en="Share technical knowledge, discuss programming issues, exchange project experience" data-jp="技術知識を共有し、プログラミングの問題を話し合い、プロジェクトの経験を交流します">分享技术知识，讨论编程问题，交流项目经验</p>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <p class="text-gray-600 mb-6" 
+							data-cn="这是一个专注于计算机技术的交流群，适合程序员、计算机专业学生和技术爱好者加入。在这里可以讨论编程语言、框架使用、算法设计等技术话题，也可以分享自己的项目经验和学习心得。" 
+							data-en="This is a communication group focused on computer technology, suitable for programmers, computer science students, and technology enthusiasts. Here you can discuss technical topics such as programming languages, framework usage, and algorithm design, and also share your project experience and learning insights." 
+							data-jp="これはコンピュータ技術に焦点を当てたコミュニケーショングループで、プログラマー、コンピュータ専攻の学生、技術愛好家が参加するのに適しています。ここではプログラミング言語、フレームワークの使用、アルゴリズム設計などの技術トピックを話し合うことができます。また、自分のプロジェクトの経験や学習の心得を共有することもできます。">
+							这是一个专注于计算机技术的交流群，适合程序员、计算机专业学生和技术爱好者加入。在这里可以讨论编程语言、框架使用、算法设计等技术话题，也可以分享自己的项目经验和学习心得。
+						</p>
+                        <div class="flex flex-wrap gap-4">
+                            <div class="flex items-center text-box-softBlue px-3 py-1 rounded-full text-sm">
+                                <i class="fa fa-code text-primary mr-1"></i>
+                                <span data-cn="编程讨论" data-en="Programming Discussion" data-jp="プログラミング議論">编程讨论</span>
+                            </div>
+                            <div class="flex items-center text-box-softGreen px-3 py-1 rounded-full text-sm">
+                                <i class="fa fa-project-diagram text-secondary mr-1"></i>
+                                <span data-cn="项目分享" data-en="Project Sharing" data-jp="プロジェクト共有">项目分享</span>
+                            </div>
+                            <div class="flex items-center text-box-softPink px-3 py-1 rounded-full text-sm">
+                                <i class="fa fa-book text-accent mr-1"></i>
+                                <span data-cn="学习资源" data-en="Learning Resources" data-jp="学習リソース">学习资源</span>
+                            </div>
+                        </div>
+                        <div class="mt-6 text-center">
+                            <button class="open-modal px-8 py-4 bg-primary text-white rounded-xl shadow-lg shadow-primary/30 hover:shadow-xl hover:shadow-primary/40 hover:-translate-y-1 transition-all text-lg font-medium" 
+								data-target="group-modal-1"
+								data-cn="技术交流群 <i class='fa fa-code ml-2'></i>"
+								data-en="Technical Group <i class='fa fa-code ml-2'></i>"
+								data-jp="技術グループ <i class='fa fa-code ml-2'></i>">
+							</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 留学交流群 -->
+                <div class="bg-white rounded-2xl shadow-xl overflow-hidden card-hover">
+                    <div class="h-48 overflow-hidden relative">
+                        <img src="pic/study-group.jpg" alt="留学交流群" class="w-full h-full object-cover">
+                        <div class="absolute inset-0 bg-gradient-to-t from-dark/70 to-transparent"></div>
+                        <div class="absolute bottom-4 left-4">
+                            <h3 class="text-xl font-bold text-white"
+                                data-cn="留学交流群" data-en="Study Abroad Communication Group" data-jp="留学コミュニケーショングループ">
+                            </h3>
+                            <p class="text-white/80" data-cn="讨论留学规划，分享申请经验，交流留学生活" data-en="Discuss study abroad plans, share application experience, exchange study abroad life" data-jp="留学計画を話し合い、出願経験を共有し、留学生活を交流します">讨论留学规划，分享申请经验，交流留学生活</p>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <p class="text-gray-600 mb-6" 
+							data-cn="这是一个专注于留学申请和留学生活的交流群，适合计划留学或正在留学的同学加入。在这里可以讨论留学国家选择、院校申请、文书准备、签证办理等话题，也可以分享留学生活经验和文化适应心得。" 
+							data-en="This is a communication group focused on study abroad applications and study abroad life, suitable for students planning to study abroad or already studying abroad. Here you can discuss topics such as study abroad country selection, university application, document preparation, visa processing, etc., and also share study abroad life experience and cultural adaptation insights." 
+							data-jp="これは留学申請と留学生活に焦点を当てたコミュニケーショングループで、留学を計画しているまたはすでに留学中の学生が参加するのに適しています。ここでは留学先の国の選択、大学の出願、書類の準備、ビザの手続きなどのトピックを話し合うことができます。また、留学生活の経験や文化適応の心得を共有することもできます。">
+							这是一个专注于留学申请和留学生活的交流群，适合计划留学或正在留学的同学加入。在这里可以讨论留学国家选择、院校申请、文书准备、签证办理等话题，也可以分享留学生活经验和文化适应心得。
+						</p>
+                        <div class="flex flex-wrap gap-4">
+                            <div class="flex items-center text-box-softBlue px-3 py-1 rounded-full text-sm">
+                                <i class="fa fa-university text-primary mr-1"></i>
+                                <span data-cn="院校申请" data-en="University Application" data-jp="大学出願">院校申请</span>
+                            </div>
+                            <div class="flex items-center text-box-softGreen px-3 py-1 rounded-full text-sm">
+                                <i class="fa fa-file-text-o text-secondary mr-1"></i>
+                                <span data-cn="文书准备" data-en="Document Preparation" data-jp="書類準備">文书准备</span>
+                            </div>
+                            <div class="flex items-center text-box-softPink px-3 py-1 rounded-full text-sm">
+                                <i class="fa fa-globe text-accent mr-1"></i>
+                                <span data-cn="文化交流" data-en="Cultural Exchange" data-jp="文化交流">文化交流</span>
+                            </div>
+                        </div>
+                        <div class="mt-6 text-center">
+                            <button class="open-modal px-8 py-4 bg-accent text-white rounded-xl shadow-lg shadow-accent/30 hover:shadow-xl hover:shadow-accent/40 hover:-translate-y-1 transition-all text-lg font-medium" 
+								data-target="group-modal-2"
+								data-cn="留学交流群 <i class='fa fa-plane ml-2'></i>"
+								data-en="Study Abroad Group <i class='fa fa-plane ml-2'></i>"
+								data-jp="留学グループ <i class='fa fa-plane ml-2'></i>">
+							</button>
+                        </div>
+                    </div>
+                </div>
+				
+				<!-- 交流群弹窗 (两个弹窗分别对应不同二维码) -->
+				<!-- 第一个交流群弹窗 -->
+				<div id="group-modal-1" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300">
+				  <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 transform scale-95 transition-transform duration-300">
+					<!-- 关闭按钮 -->
+					<button class="close-modal absolute top-4 right-4 text-gray-500 hover:text-gray-700 transition-colors">
+					  <i class="fa fa-times text-xl"></i>
+					</button>
+					
+					<div class="p-6 text-center">
+					  <h3 class="text-xl font-bold mb-4" 
+						  data-cn="技术交流群" 
+						  data-en="Technical Communication Group" 
+						  data-jp="技術コミュニケーショングループ">
+					  </h3>
+					  
+					  <!-- 二维码图片1 -->
+					  <div class="mb-6 flex justify-center">
+						<img src="pic/example.png" alt="技术交流群二维码" class="w-64 h-64 object-contain rounded-lg shadow-md">
+					  </div>
+					  
+					  <!-- 提示语 -->
+					  <p class="text-gray-600 mb-2" 
+						 data-cn="扫码加入技术交流群，与开发者共同探讨" 
+						 data-en="Scan to join technical group, discuss with developers" 
+						 data-jp="QRコードをスキャンして技術グループに参加、開発者と共同で討論しましょう">
+					  </p>
+					</div>
+				  </div>
+				</div>
+
+				<!-- 第二个交流群弹窗 -->
+				<div id="group-modal-2" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300">
+				  <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 transform scale-95 transition-transform duration-300">
+					<!-- 关闭按钮 -->
+					<button class="close-modal absolute top-4 right-4 text-gray-500 hover:text-gray-700 transition-colors">
+					  <i class="fa fa-times text-xl"></i>
+					</button>
+					
+					<div class="p-6 text-center">
+					  <h3 class="text-xl font-bold mb-4" 
+						  data-cn="留学交流群" 
+						  data-en="Study Abroad Group" 
+						  data-jp="留学コミュニケーショングループ">
+					  </h3>
+					  
+					  <!-- 二维码图片2 -->
+					  <div class="mb-6 flex justify-center">
+						<img src="pic/example.png" alt="留学交流群二维码" class="w-64 h-64 object-contain rounded-lg shadow-md">
+					  </div>
+					  
+					  <!-- 提示语 -->
+					  <p class="text-gray-600 mb-2" 
+						 data-cn="扫码加入留学交流群，分享留学经验" 
+						 data-en="Scan to join study abroad group, share experiences" 
+						 data-jp="QRコードをスキャンして留学グループに参加、留学経験を共有しましょう">
+					  </p>
+					</div>
+				  </div>
+				</div>
+            </div>
+        </div>
+    </section>
+	
+	<section id="contact" class="py-20 relative overflow-hidden section-fade">
+        <div class="container mx-auto px-4 relative z-10">
+			<div class="text-center max-w-3xl mx-auto mb-16">
+				<span class="inline-block px-4 py-1 bg-primary/10 text-primary rounded-full text-sm font-medium mb-4"
+					data-cn="联系我" data-en="Contact Me" data-jp="連絡先">
+				</span>
+				<h2 class="text-[clamp(1.8rem,5vw,3rem)] font-bold mb-6"
+					data-cn="保持联系" data-en="Stay Connected" data-jp="つながりを保つ">
+				</h2>
+				<p class="text-gray-600 text-lg"
+					data-cn="无论您有任何问题或合作意向，都可以通过以下方式联系我"
+					data-en="Whether you have any questions or cooperation intentions, you can contact me through the following methods"
+					data-jp="ご質問や協力意向があれば、以下の方法でお問い合わせください">
+				</p>
+			</div>
+			
+			<div class="max-w-5xl mx-auto">
+				<!-- 移除发送消息卡片，只保留联系方式卡片并平铺显示 -->
+				<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+					<!-- 联系方式卡片 -->
+					<div class="bg-white rounded-2xl p-8 shadow-lg card-hover">
+						<div class="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-6">
+							<i class="fa fa-envelope text-2xl"></i>
+						</div>
+						<h3 class="text-xl font-bold mb-4"
+							data-cn="电子邮件" data-en="Email" data-jp="メール">
+						</h3>
+						<p class="text-gray-600 mb-6"
+							data-cn="随时发送邮件，我会尽快回复"
+							data-en="Send an email anytime, I will reply as soon as possible"
+							data-jp="いつでもメールを送ってください。できるだけ早く返信します">
+						</p>
+						<a href="mailto:contact@huyang3780.top" class="text-primary font-medium hover:underline flex items-center">
+							<span>contact@huyang3780.top</span>
+							<i class="fa fa-external-link ml-2"></i>
+						</a>
+					</div>
+					
+					<div class="bg-white rounded-2xl p-8 shadow-lg card-hover">
+						<div class="w-14 h-14 rounded-full bg-wechat/10 flex items-center justify-center text-wechat mb-6">
+							<i class="fa fa-weixin text-2xl"></i>
+						</div>
+						<h3 class="text-xl font-bold mb-4"
+							data-cn="微信" data-en="WeChat" data-jp="WeChat">
+						</h3>
+						<p class="text-gray-600 mb-6"
+							data-cn="扫码添加我的微信"
+							data-en="Scan the code to add my WeChat"
+							data-jp="QRコードをスキャンしてWeChatを追加">
+						</p>
+						<div class="bg-gray-100 p-3 inline-block rounded-lg">
+							<img src="pic/wechat.png" alt="微信二维码" class="w-32 h-32 object-cover">
+						</div>
+					</div>
+					
+					<div class="bg-white rounded-2xl p-8 shadow-lg card-hover">
+						<div class="w-14 h-14 rounded-full bg-qq/10 flex items-center justify-center text-qq mb-6">
+							<i class="fa fa-qq text-2xl"></i>
+						</div>
+						<h3 class="text-xl font-bold mb-4"
+							data-cn="QQ" data-en="QQ" data-jp="QQ">
+						</h3>
+						<p class="text-gray-600 mb-6"
+							data-cn="扫码添加我的QQ"
+							data-en="Scan the code to add my QQ"
+							data-jp="QRコードをスキャンしてQQを追加">
+						</p>
+						<div class="bg-gray-100 p-3 inline-block rounded-lg">
+							<img src="pic/qq.png" alt="QQ二维码" class="w-32 h-32 object-cover">
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+    </section>
+	
+    <footer class="bg-dark text-white py-12">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-6 md:mb-0">
+                    <a href="https://huyang3780.top" class="text-2xl font-bold flex items-center">
+                        <span class="mr-2 text-primary"><i class="fa fa-connectdevelop"></i></span>
+                        <span>Jeffery Hu</span>
+                    </a>
+                    <p class="text-gray-400 mt-2"
+                        data-cn="我的数字家园，连接你我"
+                        data-en="My digital home, connecting you and me"
+                        data-jp="私のデジタルホーム、あなたと私をつなぐ">
+                    </p>
+                </div>
+                
+                <div class="flex flex-wrap justify-center gap-x-8 gap-y-4">
+                    <a href="#comment" class="text-gray-400 hover:text-white transition-colors" data-cn="留言区" data-en="Message Area" data-jp="メッセージエリア">留言区</a>
+                    <a href="#problem" class="text-gray-400 hover:text-white transition-colors" data-cn="常见问题" data-en="FAQ" data-jp="よくある質問">常见问题</a>
+                    <a href="#group" class="text-gray-400 hover:text-white transition-colors" data-cn="交流群" data-en="Communication Group" data-jp="コミュニケーショングループ">交流群</a>
+					<a href="#contact" class="text-gray-400 hover:text-white transition-colors" data-cn="联系我" data-en="Contact Me" data-jp="連絡先">联系我</a>
+				</div>
+            </div>
+            
+            <div class="border-t border-gray-800 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center">
+                <p class="text-gray-500 text-sm"
+                    data-cn="© 2025 Jeffery Hu  |  保留所有权利。"
+                    data-en="© 2025 Jeffery Hu  |  All rights reserved."
+                    data-jp="© 2025 Jeffery Hu  |  全著作権所有。">
+                </p>
+                <div class="mt-4 md:mt-0">
+                    <select id="footer-language-selector" class="bg-gray-800 border border-gray-700 text-gray-300 rounded-md px-3 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-primary">
+                        <option value="cn" selected>中文</option>
+                        <option value="en">English</option>
+                        <option value="jp">日本語</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </footer>
+	
+    <script src="src/js.js"></script>
+</body>
+</html>
