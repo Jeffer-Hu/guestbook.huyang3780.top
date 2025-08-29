@@ -1,4 +1,3 @@
-//<script src="path/to/language-sync.js"></script>
 // language-sync.js
 class CrossDomainLanguageSync {
     constructor(options = {}) {
@@ -196,3 +195,4 @@ class CrossDomainLanguageSync {
 document.addEventListener('DOMContentLoaded', () => {
     window.languageSync = new CrossDomainLanguageSync();
 });
+
