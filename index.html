@@ -16,40 +16,41 @@
     <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
     
     <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: '#3B82F6',
-                        secondary: '#10B981',
-                        accent: '#EC4899',
-                        wechat: '#07C160',
-                        weibo: '#E6162D',
-                        zhihu: '#0F88EB',
-                        qq: '#12B7F5',
-                        dark: '#1E293B',
-                        light: '#F8FAFC',
-                        softBlue: '#E1F5FE',
-                        softGreen: '#E8F5E9',
-                        softBeige: '#F5F5DC',
-                        softPink: '#FFEBEE',
-                        softGray: '#F5F7FA',
-                        softLavender: '#F3E5F5'
-                    },
-                    fontFamily: {
-                        sans: ['Inter', 'system-ui', 'sans-serif'],
-                    },
-                }
-            }
-        }
-		
-	    // 跨子域语言同步功能
+	    tailwind.config = {
+	        theme: {
+	            extend: {
+	                colors: {
+	                    primary: '#3B82F6',
+	                    secondary: '#10B981',
+	                    accent: '#EC4899',
+	                    wechat: '#07C160',
+	                    weibo: '#E6162D',
+	                    zhihu: '#0F88EB',
+	                    qq: '#12B7F5',
+	                    dark: '#1E293B',
+	                    light: '#F8FAFC',
+	                    softBlue: '#E1F5FE',
+	                    softGreen: '#E8F5E9',
+	                    softBeige: '#F5F5DC',
+	                    softPink: '#FFEBEE',
+	                    softGray: '#F5F7FA',
+	                    softLavender: '#F3E5F5'
+	                },
+	                fontFamily: {
+	                    sans: ['Inter', 'system-ui', 'sans-serif'],
+	                },
+	            }
+	        }
+	    }
+	    
+	    // 跨子域语言同步功能 - 改进版
 	    class CrossDomainLanguageSync {
 	        constructor() {
 	            this.origin = 'https://huyang3780.top';
 	            this.storageKey = 'preferredLanguage';
 	            this.availableLanguages = ['cn', 'en', 'jp'];
 	            this.currentLanguage = 'cn';
+	            this.isInitializing = true;
 	            
 	            // 初始化
 	            this.init();
@@ -63,16 +64,29 @@
 	            this.loadLanguage();
 	            
 	            // 设置语言选择器事件
-	            const selector = document.getElementById('language-selector');
-	            if (selector) {
+	            this.setupLanguageSelectors();
+	            
+	            // 广播当前语言设置到其他窗口
+	            setTimeout(() => {
+	                this.broadcastLanguage();
+	                this.isInitializing = false;
+	            }, 1000);
+	        }
+	        
+	        // 设置语言选择器
+	        setupLanguageSelectors() {
+	            const selectors = [
+	                document.getElementById('language-selector'),
+	                document.getElementById('mobile-language-selector'),
+	                document.getElementById('footer-language-selector')
+	            ].filter(selector => selector !== null);
+	            
+	            selectors.forEach(selector => {
 	                selector.value = this.currentLanguage;
 	                selector.addEventListener('change', (e) => {
 	                    this.changeLanguage(e.target.value);
 	                });
-	            }
-	            
-	            // 广播当前语言设置到其他窗口
-	            this.broadcastLanguage();
+	            });
 	        }
 	        
 	        // 接收来自其他窗口的消息
@@ -82,7 +96,8 @@
 	            
 	            if (event.data && event.data.type === 'LANGUAGE_CHANGE') {
 	                const { language } = event.data;
-	                if (this.availableLanguages.includes(language)) {
+	                if (this.availableLanguages.includes(language) && language !== this.currentLanguage) {
+	                    console.log('Received language change:', language);
 	                    this.applyLanguage(language, false); // 不广播以避免循环
 	                }
 	            }
@@ -90,37 +105,41 @@
 	        
 	        // 广播语言设置到所有子域
 	        broadcastLanguage() {
-	            // 获取所有可能的子域窗口
-	            const frames = window.parent.frames || window.opener;
-	            
 	            // 发送消息到父窗口（如果存在）
 	            if (window.parent !== window.self) {
-	                window.parent.postMessage({
-	                    type: 'LANGUAGE_CHANGE',
-	                    language: this.currentLanguage
-	                }, this.origin);
-	            }
-	            
-	            // 发送消息到子框架（如果存在）
-	            if (window.frames && window.frames.length > 0) {
-	                for (let i = 0; i < window.frames.length; i++) {
-	                    try {
-	                        window.frames[i].postMessage({
-	                            type: 'LANGUAGE_CHANGE',
-	                            language: this.currentLanguage
-	                        }, this.origin);
-	                    } catch (e) {
-	                        console.log('无法向某些框架发送消息:', e);
-	                    }
+	                try {
+	                    window.parent.postMessage({
+	                        type: 'LANGUAGE_CHANGE',
+	                        language: this.currentLanguage,
+	                        source: 'guestbook'
+	                    }, this.origin);
+	                } catch (e) {
+	                    console.log('无法向父窗口发送消息:', e);
 	                }
 	            }
 	            
 	            // 发送消息到打开者窗口（如果是弹出窗口）
 	            if (window.opener && !window.opener.closed) {
-	                window.opener.postMessage({
-	                    type: 'LANGUAGE_CHANGE',
-	                    language: this.currentLanguage
-	                }, this.origin);
+	                try {
+	                    window.opener.postMessage({
+	                        type: 'LANGUAGE_CHANGE',
+	                        language: this.currentLanguage,
+	                        source: 'guestbook'
+	                    }, this.origin);
+	                } catch (e) {
+	                    console.log('无法向打开者窗口发送消息:', e);
+	                }
+	            }
+	            
+	            // 使用localStorage事件同步同一浏览器的其他标签页
+	            try {
+	                localStorage.setItem('lang_sync', JSON.stringify({
+	                    language: this.currentLanguage,
+	                    timestamp: Date.now(),
+	                    source: 'guestbook'
+	                }));
+	            } catch (e) {
+	                console.error('localStorage写入错误:', e);
 	            }
 	        }
 	        
@@ -156,7 +175,7 @@
 	        
 	        // 应用语言设置
 	        applyLanguage(lang, broadcast = true) {
-	            if (this.currentLanguage === lang) return;
+	            if (this.currentLanguage === lang && !this.isInitializing) return;
 	            
 	            this.currentLanguage = lang;
 	            
@@ -171,10 +190,7 @@
 	            }
 	            
 	            // 更新语言选择器
-	            const selector = document.getElementById('language-selector');
-	            if (selector) {
-	                selector.value = lang;
-	            }
+	            this.setupLanguageSelectors();
 	            
 	            // 广播语言更改
 	            if (broadcast) {
@@ -184,15 +200,65 @@
 	        
 	        // 更新UI文本
 	        updateUI() {
-	            // 这里应该实现根据当前语言更新页面文本的逻辑
-	            console.log(`语言已更改为: ${this.currentLanguage}`);
-	            // 实际项目中，这里应该遍历所有带有data-lang属性的元素并更新其内容
+	            const lang = this.currentLanguage;
+	            const translatableElements = document.querySelectorAll('[data-cn], [data-en], [data-jp]');
+	            
+	            translatableElements.forEach(element => {
+	                if (element.hasAttribute(`data-${lang}`)) {
+	                    const newContent = element.getAttribute(`data-${lang}`);
+	                    if (newContent !== element.innerHTML) {
+	                        element.innerHTML = newContent;
+	                    }
+	                }
+	            });
+	            
+	            // 更新占位符
+	            const placeholderElements = document.querySelectorAll('[data-cn-placeholder], [data-en-placeholder], [data-jp-placeholder]');
+	            placeholderElements.forEach(element => {
+	                if (element.hasAttribute(`data-${lang}-placeholder`)) {
+	                    element.placeholder = element.getAttribute(`data-${lang}-placeholder`);
+	                }
+	            });
+	            
+	            // 更新元数据和页面标题
+	            const ogTitle = document.querySelector('meta[property="og:title"]');
+	            const ogDesc = document.querySelector('meta[property="og:description"]');
+	            const pageTitle = document.getElementById('page-title');
+	            
+	            if (ogTitle && ogTitle.hasAttribute(`data-${lang}`)) {
+	                ogTitle.setAttribute('content', ogTitle.getAttribute(`data-${lang}`));
+	            }
+	            if (ogDesc && ogDesc.hasAttribute(`data-${lang}`)) {
+	                ogDesc.setAttribute('content', ogDesc.getAttribute(`data-${lang}`));
+	            }
+	            if (pageTitle && pageTitle.hasAttribute(`data-${lang}`)) {
+	                pageTitle.textContent = pageTitle.getAttribute(`data-${lang}`);
+	            }
+	            
+	            // 更新HTML语言属性
+	            document.documentElement.lang = lang === 'cn' ? 'zh-CN' : lang === 'jp' ? 'ja' : 'en';
+	            
+	            console.log(`Language changed to: ${lang}`);
 	        }
 	    }
 	
 	    // 初始化
 	    document.addEventListener('DOMContentLoaded', () => {
 	        const languageSync = new CrossDomainLanguageSync();
+	        
+	        // 监听localStorage变化（用于同一浏览器的标签页同步）
+	        window.addEventListener('storage', (e) => {
+	            if (e.key === 'lang_sync' && e.newValue) {
+	                try {
+	                    const data = JSON.parse(e.newValue);
+	                    if (data.language && data.source !== 'guestbook') {
+	                        languageSync.applyLanguage(data.language, false);
+	                    }
+	                } catch (error) {
+	                    console.error('解析storage事件数据失败:', error);
+	                }
+	            }
+	        });
 	        
 	        // 其他页面初始化代码
 	        const faqQuestions = document.querySelectorAll('.faq-question');
